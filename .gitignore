@@ -1,3 +1,9 @@
+# Data - download from DepMap directly
+*.csv
+
+# Mac
+.DS_Store
+
 # Logs
 logs
 *.log
