@@ -1,146 +1,116 @@
 import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
-import { useAnimatedLayout } from '../layouts';
-import { a } from '@react-spring/three';
+import { useThree } from '@react-three/fiber';
 
-const scratchObject3D = new THREE.Object3D();
-const scratchColor = new THREE.Color();
+const InstancedPoints = ({ data, selectedPoint, onSelectPoint }) => {
+    const meshRef = useRef();
+    const heightScale = 100;
+    const { camera, gl } = useThree();
 
-const SELECTED_COLOR = '#6f6';
-const DEFAULT_COLOR = '#888';
+    useEffect(() => {
+        if (!meshRef.current || !data.length) return;
 
-function updateInstancedMeshMatrices({ mesh, data }) {
-  if (!mesh) return;
+        const tempObject = new THREE.Object3D();
+        const colors = new Float32Array(data.length * 3);
 
-  for (let i = 0; i < data.length; ++i) {
-    const { x, y, z } = data[i];
-    scratchObject3D.position.set(x, y, z);
-    scratchObject3D.rotation.set(0.5 * Math.PI, 0, 0);
-    scratchObject3D.updateMatrix();
-    mesh.setMatrixAt(i, scratchObject3D.matrix);
-  }
+        data.forEach((point, i) => {
+            const height = point.expression * heightScale;
+            tempObject.position.set(point.x, height/2, point.y);
+            tempObject.scale.set(1.5, height || 0.1, 1.5);
+            tempObject.updateMatrix();
+            meshRef.current.setMatrixAt(i, tempObject.matrix);
+            colors.set([0.666, 0.666, 0.666], i * 3); // Set to grey #aaa
+            meshRef.current.geometry.setAttribute('color', new THREE.InstancedBufferAttribute(colors, 3));
+            meshRef.current.geometry.computeBoundingBox();
+        });
 
-  mesh.instanceMatrix.needsUpdate = true;
-}
+        meshRef.current.instanceMatrix.needsUpdate = true;
+        
+    }, [data]);
 
-const usePointColors = ({ data, selectedPoint }) => {
-  const numPoints = data.length;
-  const colorAttrib = useRef();
-  const colorArray = React.useMemo(() => new Float32Array(numPoints * 3), [numPoints]);
+    const handleClick = (event) => {
+        event.stopPropagation();
+        
+        const raycaster = new THREE.Raycaster();
+        const rect = gl.domElement.getBoundingClientRect();
+        const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
-  useEffect(() => {
-    for (let i = 0; i < data.length; ++i) {
-      scratchColor.set(data[i] === selectedPoint ? SELECTED_COLOR : DEFAULT_COLOR);
-      scratchColor.toArray(colorArray, i * 3);
-    }
-    if (colorAttrib.current) {
-      colorAttrib.current.needsUpdate = true;
-    }
-  }, [data, selectedPoint, colorArray]);
+        console.log('Click event:', {
+            normalizedCoords: { x, y },
+            rawCoords: { clientX: event.clientX, clientY: event.clientY },
+            rect: {
+                left: rect.left,
+                top: rect.top,
+                width: rect.width,
+                height: rect.height
+            },
+            camera: {
+                position: camera.position.toArray(),
+                rotation: camera.rotation.toArray(),
+                matrix: camera.matrix.toArray(),
+                projectionMatrix: camera.projectionMatrix.toArray()
+            }
+        });
 
-  return { colorAttrib, colorArray };
-};
+        raycaster.setFromCamera({ x, y }, camera);
+        const intersects = raycaster.intersectObject(meshRef.current);
 
-const useMousePointInteraction = ({ data, selectedPoint, onSelectPoint }) => {
-  const mouseDownRef = useRef([0, 0]);
+        console.log('Raycaster test:', {
+            ray: {
+                origin: raycaster.ray.origin.toArray(),
+                direction: raycaster.ray.direction.toArray()
+            },
+            intersectionsFound: intersects.length,
+            intersectionDetails: intersects.map(int => ({
+                distance: int.distance,
+                instanceId: int.instanceId,
+                point: int.point.toArray(),
+                face: int.face
+            }))
+        });
 
-  const handlePointerDown = (e) => {
-    mouseDownRef.current = [e.clientX, e.clientY];
-  };
+        if (intersects.length > 0) {
+            const instanceId = intersects[0].instanceId;
+            onSelectPoint(data[instanceId]);
 
-  const handleClick = (event) => {
-    const { instanceId, clientX, clientY } = event;
-    const downDistance = Math.sqrt(
-      Math.pow(mouseDownRef.current[0] - clientX, 2) +
-      Math.pow(mouseDownRef.current[1] - clientY, 2)
-    );
+            // Update color to green for the selected instance
+            const colors = meshRef.current.geometry.attributes.color.array;
+            for (let i = 0; i < data.length; i++) {
+                if (i === instanceId) {
+                    colors.set([0, 1, 0], i * 3); // Green
+                } else {
+                    colors.set([0.666, 0.666, 0.666], i * 3); // Gray
+                }
+            }
+            meshRef.current.geometry.attributes.color.needsUpdate = true;
+        } else {
+            onSelectPoint(null);
+        }
+    };
 
-    if (downDistance > 5) {
-      event.stopPropagation();
-      return;
-    }
-
-    if (instanceId === undefined) return;
-    const point = data[instanceId];
-
-    if (point === selectedPoint) {
-      onSelectPoint(null);
-    } else {
-      onSelectPoint(point);
-    }
-  };
-
-  return { handlePointerDown, handleClick };
-};
-
-const InstancedPoints = ({ data, layout, selectedPoint, onSelectPoint }) => {
-  const meshRef = useRef();
-  const numPoints = data.length;
-
-  const { animationProgress } = useAnimatedLayout({
-    data,
-    layout,
-    onFrame: () => {
-      updateInstancedMeshMatrices({ mesh: meshRef.current, data });
-    },
-  });
-
-  useEffect(() => {
-    updateInstancedMeshMatrices({ mesh: meshRef.current, data });
-  }, [data, layout]);
-
-  const { handleClick, handlePointerDown } = useMousePointInteraction({
-    data,
-    selectedPoint,
-    onSelectPoint,
-  });
-
-  const { colorAttrib, colorArray } = usePointColors({ data, selectedPoint });
-
-  return (
-    <>
-      <instancedMesh
-        ref={meshRef}
-        args={[null, null, numPoints]}
-        frustumCulled={false}
-        onClick={handleClick}
-        onPointerDown={handlePointerDown}
-      >
-        <cylinderGeometry args={[0.5, 0.5, 0.15, 32]}>
-          <instancedBufferAttribute
-            ref={colorAttrib}
-            attachObject={['attributes', 'color']}
-            args={[colorArray, 3]}
-          />
-        </cylinderGeometry>
-        <meshStandardMaterial vertexColors={true} />
-      </instancedMesh>
-      {selectedPoint && (
-        <a.group
-          position={animationProgress.interpolate(() => [
-            selectedPoint.x,
-            selectedPoint.y,
-            selectedPoint.z,
-          ])}
+    return (
+        <instancedMesh
+            ref={meshRef}
+            args={[null, null, data.length]}
+            onClick={handleClick}
+            frustumCulled={false}
         >
-          <pointLight
-            distance={9}
-            position={[0, 0, 0.3]}
-            intensity={2.2}
-            decay={30}
-            color="#3f3"
-          />
-          <pointLight
-            position={[0, 0, 0]}
-            decay={1}
-            distance={5}
-            intensity={1.5}
-            color="#2f0"
-          />
-        </a.group>
-      )}
-    </>
-  );
+            <boxGeometry attach="geometry" args={[1, 1, 1]}>
+                <instancedBufferAttribute
+                    attachObject={['attributes', 'color']}
+                    args={[new Float32Array(data.length * 3), 3]}
+                />
+            </boxGeometry>
+            <meshStandardMaterial
+                attach="material"
+                vertexColors
+                color="#aaa"
+                metalness={0.1}
+                roughness={0.3}
+            />
+        </instancedMesh>
+    );
 };
 
 export default InstancedPoints;

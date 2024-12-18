@@ -5,7 +5,7 @@ import ThreePointVis from './components/ThreePointVis';
 const App = () => {
   const [points, setPoints] = useState([]);
   const [selectedPoint, setSelectedPoint] = useState(null);
-  const [layout, setLayout] = useState('grid');
+  const [viewMode, setViewMode] = useState('free');
 
   useEffect(() => {
     console.log('Starting data fetch...');
@@ -14,76 +14,76 @@ const App = () => {
       .then(csvText => {
         parse(csvText, {
           complete: (results) => {
-            const genes = results.data[0].slice(1);  // Get gene names from header
+            const genes = results.data[0].slice(1);
             const points = [];
-            const rowSpacing = 2; // Space between cell lines
-            const colSpacing = 2; // Space between genes
+            const rowSpacing = 2;
+            const colSpacing = 2;
 
-            // Process first 100 cell lines
-            for (let rowIndex = 1; rowIndex < Math.min(results.data.length, 1500); rowIndex++) {
+            for (let rowIndex = 1; rowIndex < results.data.length; rowIndex++) {
               const row = results.data[rowIndex];
               const cellLine = row[0];
               const rowPosition = (rowIndex - 1) * rowSpacing;
 
-              // Create point for each gene value
               for (let colIndex = 1; colIndex < row.length; colIndex++) {
                 const expressionValue = parseFloat(row[colIndex]);
                 const colPosition = (colIndex - 1) * colSpacing;
                 
                 points.push({
-                  x: colPosition - ((row.length - 1) * colSpacing) / 2, // Center the grid
-                  y: rowPosition - 100, // Offset to center the visualization
+                  x: colPosition - ((row.length - 1) * colSpacing) / 2,
+                  y: rowPosition - ((results.data.length - 1) * rowSpacing) / 2,
                   z: 0,
                   cellLine,
                   gene: genes[colIndex - 1],
-                  expression: expressionValue
+                  expression: expressionValue,
+                  originalExpression: -expressionValue // Store negative value for display
                 });
               }
             }
             
-            console.log('Total points created:', points.length);
-            console.log('Sample points:', points.slice(0, 5));
             setPoints(points);
-          },
-          error: (error) => {
-            console.error('CSV parsing error:', error);
           }
         });
-      })
-      .catch(error => {
-        console.error('Data loading error:', error);
       });
   }, []);
 
   return (
     <div className="w-screen h-screen p-4 bg-gray-900">
+      {/* View Controls */}
+      <div className="absolute top-4 right-4 z-10 space-y-2">
+        <button
+          onClick={() => setViewMode('gene')}
+          className={`w-full px-4 py-2 rounded ${
+            viewMode === 'gene' ? 'bg-blue-600' : 'bg-blue-500'
+          } text-white hover:bg-blue-600 transition-colors`}
+        >
+          Gene View
+        </button>
+        <button
+          onClick={() => setViewMode('cell')}
+          className={`w-full px-4 py-2 rounded ${
+            viewMode === 'cell' ? 'bg-blue-600' : 'bg-blue-500'
+          } text-white hover:bg-blue-600 transition-colors`}
+        >
+          Cell Line View
+        </button>
+      </div>
+
       <ThreePointVis
         data={points}
-        layout={layout}
+        viewMode={viewMode}
         selectedPoint={selectedPoint}
         onSelectPoint={setSelectedPoint}
       />
       
-      {/* Debug panel */}
-      <div className="absolute top-4 left-4 bg-white/90 p-4 rounded-lg shadow backdrop-blur-sm max-h-96 overflow-auto">
-        <p className="font-medium">Dataset Info:</p>
-        <p className="text-sm">Total Points: {points.length}</p>
-        <p className="text-sm">Cell Lines: {new Set(points.map(p => p.cellLine)).size}</p>
-        <p className="text-sm">Unique Genes: {new Set(points.map(p => p.gene)).size}</p>
-        <div className="mt-4">
-          <p className="font-medium">Sample Points:</p>
-          <div className="text-sm mt-2 space-y-2">
-            {points.slice(0, 3).map((point, index) => (
-              <div key={index} className="border-b pb-2">
-                <p>Cell Line: {point.cellLine}</p>
-                <p>Gene: {point.gene}</p>
-                <p>Expression: {point.expression.toFixed(3)}</p>
-                <p>Position: ({point.x.toFixed(1)}, {point.y.toFixed(1)}, {point.z.toFixed(1)})</p>
-              </div>
-            ))}
-          </div>
+      {/* Info Panel */}
+      {selectedPoint && (
+        <div className="absolute bottom-4 left-4 bg-white/90 p-4 rounded-lg shadow backdrop-blur-sm">
+          <h3 className="font-medium mb-2">Selected Point:</h3>
+          <p>Cell Line: {selectedPoint.cellLine}</p>
+          <p>Gene: {selectedPoint.gene}</p>
+          <p>Expression: {selectedPoint.originalExpression.toFixed(3)}</p>
         </div>
-      </div>
+      )}
     </div>
   );
 };
