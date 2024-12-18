@@ -12,11 +12,11 @@ const ThreePointVis = ({ data, viewMode, selectedPoint, onSelectPoint }) => {
         
         switch (viewMode) {
             case 'gene':
-                controlsRef.current.object.position.set(0, 0, 1500);
+                controlsRef.current.object.position.set(0, 0, 5000);
                 controlsRef.current.target.set(0, 0, 0);
                 break;
             case 'cell':
-                controlsRef.current.object.position.set(1500, 0, 0);
+                controlsRef.current.object.position.set(5000, 0, 0);
                 controlsRef.current.target.set(0, 0, 0);
                 break;
         }
@@ -25,7 +25,7 @@ const ThreePointVis = ({ data, viewMode, selectedPoint, onSelectPoint }) => {
     return (
         <Canvas
             camera={{
-                position: [1500, 1500, 1500],
+                position: [4000, 2000, 4000],
                 near: 0.1,
                 far: 10000,
                 fov: 75

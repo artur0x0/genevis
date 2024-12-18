@@ -16,8 +16,8 @@ const App = () => {
           complete: (results) => {
             const genes = results.data[0].slice(1);
             const points = [];
-            const rowSpacing = 2;
-            const colSpacing = 2;
+            const rowSpacing = 5;
+            const colSpacing = 5;
 
             for (let rowIndex = 1; rowIndex < results.data.length; rowIndex++) {
               const row = results.data[rowIndex];

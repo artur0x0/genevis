@@ -2,9 +2,9 @@ import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 
-const InstancedPoints = ({ data, selectedPoint, onSelectPoint }) => {
+const InstancedPoints = ({ data, onSelectPoint }) => {
     const meshRef = useRef();
-    const heightScale = 100;
+    const heightScale = 200;
     const { camera, gl } = useThree();
 
     useEffect(() => {
@@ -16,7 +16,7 @@ const InstancedPoints = ({ data, selectedPoint, onSelectPoint }) => {
         data.forEach((point, i) => {
             const height = point.expression * heightScale;
             tempObject.position.set(point.x, height/2, point.y);
-            tempObject.scale.set(1.5, height || 0.1, 1.5);
+            tempObject.scale.set(4, height || 0, 4)
             tempObject.updateMatrix();
             meshRef.current.setMatrixAt(i, tempObject.matrix);
             colors.set([0.666, 0.666, 0.666], i * 3); // Set to grey #aaa
@@ -105,7 +105,6 @@ const InstancedPoints = ({ data, selectedPoint, onSelectPoint }) => {
             <meshStandardMaterial
                 attach="material"
                 vertexColors
-                color="#aaa"
                 metalness={0.1}
                 roughness={0.3}
             />
