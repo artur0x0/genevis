@@ -30,7 +30,7 @@ const InstancedPoints = ({ data, onSelectPoint }) => {
 
     const handleClick = (event) => {
         event.stopPropagation();
-        
+    
         const raycaster = new THREE.Raycaster();
         const rect = gl.domElement.getBoundingClientRect();
         const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -76,6 +76,7 @@ const InstancedPoints = ({ data, onSelectPoint }) => {
 
             // Update color to green for the selected instance
             const colors = meshRef.current.geometry.attributes.color.array;
+
             for (let i = 0; i < data.length; i++) {
                 if (i === instanceId) {
                     colors.set([0, 1, 0], i * 3); // Green

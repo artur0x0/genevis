@@ -4,8 +4,16 @@ import { OrbitControls } from '@react-three/drei';
 import InstancedPoints from './InstancedPoints';
 import Axes from './Axes';
 
-const ThreePointVis = ({ data, viewMode, selectedPoint, onSelectPoint }) => {
+const ThreePointVis = ({ data, viewMode, setViewMode, selectedPoint, onSelectPoint }) => {
     const controlsRef = useRef();
+
+    // Handle controls change
+    const handleControlsChange = () => {
+        // Only reset to 'free' if we're currently in a preset view mode
+        if (viewMode === 'gene' || viewMode === 'cell') {
+            setViewMode('free');
+        }
+    };
 
     useEffect(() => {
         if (!controlsRef.current) return;
@@ -31,8 +39,7 @@ const ThreePointVis = ({ data, viewMode, selectedPoint, onSelectPoint }) => {
                 fov: 75
             }}
             gl={{
-                antialias: false,
- 
+                antialias: false
             }}
         >
             <color attach="background" args={['#1f2937']} />
@@ -41,12 +48,14 @@ const ThreePointVis = ({ data, viewMode, selectedPoint, onSelectPoint }) => {
             
             <InstancedPoints
                 data={data}
-                selectedPoint={selectedPoint}
                 onSelectPoint={onSelectPoint}
             />
             <Axes />
             
-            <OrbitControls ref={controlsRef} />
+            <OrbitControls 
+                ref={controlsRef} 
+                //onChange={handleControlsChange}
+            />
         </Canvas>
     );
 };
