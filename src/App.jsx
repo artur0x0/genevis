@@ -87,7 +87,7 @@ const App = () => {
             className="text-blue-600 hover:underline"
           >{selectedPoint.cellLine}</a></p>
           <p>Gene: <a
-            href={`https://depmap.org/portal/gene/${selectedPoint.gene}`}
+            href={`https://depmap.org/portal/gene/${selectedPoint.gene.split(" ")[0]}`}
             target="_blank"
             rel="noopener noreferrer" 
             className="text-blue-600 hover:underline"
