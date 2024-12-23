@@ -54,7 +54,7 @@ const ThreePointVis = ({ data, viewMode, setViewMode, selectedPoint, onSelectPoi
             
             <OrbitControls 
                 ref={controlsRef} 
-                //onChange={handleControlsChange}
+                onChange={handleControlsChange}
             />
         </Canvas>
     );
