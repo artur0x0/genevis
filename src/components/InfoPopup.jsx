@@ -28,10 +28,9 @@ const InfoPopup = ({ onClose }) => {
             
             <div className="text-gray-800">
               <p className="mb-6 leading-relaxed">
-                You are about to view a 3D visualization of gene expression strength for the latest DepMap CRISPR screen data set. 
-                This data set has been filtered to include only negative gene expressions stronger than -2.186, representing 1 sigma+ data points. 
-                Clicking on a bar in the graph will provide infomation about the cell line and the gene, with links back to the DepMap portal. 
-                This tool is meant to be a high-level map of the DepMap CRISPR data set.
+                You are about to view an interactive 3D visualization of gene expression strength across all cell lines from the latest DepMap dataset. 
+                This data set has been filtered to include only negative gene expressions stronger than -2.186, which correlates to 1 sigma and larger deviations from the mean.
+                Clicking on a bar in the graph will provide information about the cell line and the gene that it represents, with links to the DepMap portal for more information.
               </p>
       
               <div className="text-sm text-gray-600 mb-4">

@@ -7,9 +7,9 @@ export const About = () => {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">Project Overview</h2>
           <p className="text-gray-700 mb-4">
-            Genevis is a 3D visualization tool for exploring gene expression data from the DepMap CRISPR screen dataset. 
-            This tool allows researchers to interactively explore relationships between cell lines and gene expressions 
-            in an intuitive three-dimensional space.
+            Genevis is a 3D visualization tool for exploring gene expression data from the DepMap dataset. 
+            This tool allows researchers to interactively explore relationships in significant gene expressions across all of DepMap's cell lines in one place.
+            Additional tools to sort, filter and heatmap the data are coming soon.
           </p>
         </section>
         
@@ -17,8 +17,7 @@ export const About = () => {
           <h2 className="text-2xl font-semibold mb-4">Data Source</h2>
           <p className="text-gray-700 mb-4">
             The data visualized in this tool comes from the DepMap project at the Broad Institute. The current version 
-            uses the 24Q4 Public release, which includes CRISPR Screens, PRISM Drug Screens, Copy Number, Mutation, 
-            Expression, and Fusion data.
+            uses the 24Q4 Public release.
           </p>
           <p className="text-gray-700 mb-4">
             Citation: DepMap, Broad (2024). DepMap 24Q4 Public. Figshare+. Dataset.{' '}
