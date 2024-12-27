@@ -63,6 +63,7 @@ const ThreePointVis = ({ data, viewMode, setViewMode, selectedPoint, onSelectPoi
         <directionalLight position={[50, 50, 50]} intensity={1} />
         <InstancedPoints
           data={filteredData}
+          selectedPoint={selectedPoint}
           onSelectPoint={onSelectPoint}
         />
         <Axes />
