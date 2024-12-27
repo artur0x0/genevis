@@ -56,7 +56,7 @@ const SearchPane = () => {
           type="text"
           value={searchTerm}
           onChange={handleSearchChange}
-          placeholder="Search"
+          placeholder="Search gene"
           className="w-full p-3 rounded-lg bg-white/90 backdrop-blur-sm shadow pl-4 pr-10"
         />
         <Search 

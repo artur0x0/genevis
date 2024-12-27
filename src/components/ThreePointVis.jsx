@@ -4,10 +4,12 @@ import { OrbitControls } from '@react-three/drei';
 import InstancedPoints from './InstancedPoints';
 import Axes from './Axes';
 import { useVis } from '../context/VisContext';
+import { useData } from '../context/DataContext';
 
 const ThreePointVis = ({ data, viewMode, setViewMode, selectedPoint, onSelectPoint }) => {
   const controlsRef = useRef();
   const { activeFilters } = useVis();
+  const { getModelData } = useData(); 
 
   // Filter the data based on active filters
   const filteredData = useMemo(() => {

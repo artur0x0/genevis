@@ -39,7 +39,7 @@ const GraphView = () => {
     <VisProvider>
       <div className="relative bg-gray-900 flex-1">
         {/* Left side controls */}
-        <div className="absolute left-4 w-64 flex flex-col gap-4 z-10">
+        <div className="absolute w-64 flex flex-col gap-4 z-10">
           <HeatmapControls />
         </div>
   
