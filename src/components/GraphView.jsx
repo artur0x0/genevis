@@ -3,6 +3,7 @@ import { useData } from '../context/DataContext';
 import { VisProvider } from '../context/VisContext';
 import ThreePointVis from './ThreePointVis';
 import HeatmapControls from './HeatmapControls';
+import ViewControls from './ViewControls';
 import FilterPane from './FilterPane';
 import InfoPanel from './InfoPanel';
 import InfoPopup from './InfoPopup';
@@ -12,13 +13,6 @@ const GraphView = () => {
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [viewMode, setViewMode] = useState('free');
   const [showPopup, setShowPopup] = useState(false);
-
-  useEffect(() => {
-    const hidePopup = document.cookie.split(';').some(item => item.trim().startsWith('hideDataPopup='));
-    if (!hidePopup) {
-      setShowPopup(true);
-    }
-  }, []);
 
   if (loading) {
     return (
@@ -39,28 +33,16 @@ const GraphView = () => {
   return (
     <VisProvider>
       <div className="relative bg-gray-900 flex-1">
-        {/* View Controls */}
-        <div className="absolute top-4 right-4 z-10 space-y-2">
-          <button
-            onClick={() => setViewMode('gene')}
-            className={`w-full px-4 py-2 rounded ${
-              viewMode === 'gene' ? 'bg-blue-600' : 'bg-blue-500'
-            } text-white hover:bg-blue-600 transition-colors`}
-          >
-            Gene View
-          </button>
-          <button
-            onClick={() => setViewMode('cell')}
-            className={`w-full px-4 py-2 rounded ${
-              viewMode === 'cell' ? 'bg-blue-600' : 'bg-blue-500'
-            } text-white hover:bg-blue-600 transition-colors`}
-          >
-            Cell Line View
-          </button>
-        </div>
-
+        {/* Left side controls */}
         <HeatmapControls />
-        <FilterPane />
+        
+        {/* Right side controls */}
+        <div className="absolute right-4 top-4 bottom-4 w-64 flex flex-col gap-4 z-10">
+          <ViewControls viewMode={viewMode} setViewMode={setViewMode} />
+          <div className="flex-1 min-h-0">
+            <FilterPane />
+          </div>
+        </div>
 
         <ThreePointVis
           data={points}

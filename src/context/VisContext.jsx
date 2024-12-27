@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useData } from './DataContext';
+import { useData } from '../context/DataContext';
 
 const VisContext = createContext();
 
@@ -9,6 +9,7 @@ export const VisProvider = ({ children }) => {
   const [activeFilters, setActiveFilters] = useState({});
   const [colorScheme, setColorScheme] = useState({});
   const [uniqueValues, setUniqueValues] = useState({});
+  const [columns, setColumns] = useState([]);
 
   useEffect(() => {
     if (!modelData?.length) {
@@ -21,10 +22,14 @@ export const VisProvider = ({ children }) => {
       sampleRow: modelData[0]
     });
 
+    // Get and set columns first
+    const validColumns = Object.keys(modelData[0]).filter(key => key);
+    setColumns(validColumns);
+
     const newUniqueValues = {};
     const newColorScheme = {};
 
-    Object.keys(modelData[0]).forEach(column => {
+    validColumns.forEach(column => {
       const values = Array.from(new Set(
         modelData.map(row => row[column]).filter(Boolean)
       )).sort();
@@ -40,27 +45,23 @@ export const VisProvider = ({ children }) => {
     });
 
     console.log('Generated visualization data:', {
+      columnsCount: validColumns.length,
       uniqueValuesKeys: Object.keys(newUniqueValues),
-      colorSchemeKeys: Object.keys(newColorScheme),
-      sampleColors: newColorScheme[selectedColorColumn]
+      colorSchemeKeys: Object.keys(newColorScheme)
     });
 
     setUniqueValues(newUniqueValues);
     setColorScheme(newColorScheme);
-  }, [modelData, selectedColorColumn]);
-
-  const handleSetActiveFilters = (newFilters) => {
-    console.log('Setting active filters:', newFilters);
-    setActiveFilters(newFilters);
-  };
+  }, [modelData]);
 
   const value = {
     selectedColorColumn,
     setSelectedColorColumn,
     activeFilters,
-    setActiveFilters: handleSetActiveFilters,
+    setActiveFilters,
     colorScheme,
     uniqueValues,
+    columns, // Make sure columns is included in the context value
   };
 
   return (
