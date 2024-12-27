@@ -1,3 +1,6 @@
+# Deployment script
+deploy.sh
+
 # Data - download from DepMap directly
 *.csv
 
