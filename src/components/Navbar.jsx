@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu } from 'lucide-react';
+import VisitorCounter from './VisitorCounter';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,6 +13,8 @@ const Navbar = () => {
           <div className="flex items-center">
             <span className="text-xl font-semibold">Genevis</span>
           </div>
+
+          <VisitorCounter />
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">
