@@ -1,8 +1,9 @@
 // InfoPanel.js
 import React from 'react';
 import { useData } from '../context/DataContext';
+import { X } from 'lucide-react';
 
-export const InfoPanel = ({ selectedPoint }) => {
+export const InfoPanel = ({ selectedPoint, onClose }) => {
     const { getModelData } = useData();
 
     if (!selectedPoint) return null;
@@ -11,7 +12,16 @@ export const InfoPanel = ({ selectedPoint }) => {
   
     return (
       <div className="absolute bottom-4 left-4 bg-white/90 p-4 rounded-lg shadow backdrop-blur-sm">
-        <h3 className="font-medium mb-2">Selected Point:</h3>
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="font-medium mb-2">Selected Point:</h3>
+          <button 
+            onClick={onClose}
+            className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+            aria-label="Close info panel"
+          >
+            <X size={16} />
+          </button>
+        </div>
         <p>
           Cell Line:{' '}
           <a

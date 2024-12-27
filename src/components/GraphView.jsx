@@ -14,6 +14,10 @@ const GraphView = () => {
   const [viewMode, setViewMode] = useState('free');
   const [showPopup, setShowPopup] = useState(false);
 
+  const handleClearSelection = () => {
+    setSelectedPoint(null);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -52,7 +56,10 @@ const GraphView = () => {
           onSelectPoint={setSelectedPoint}
         />
         
-        <InfoPanel selectedPoint={selectedPoint} />
+        <InfoPanel 
+          selectedPoint={selectedPoint}
+          onClose={handleClearSelection}
+        />
         {showPopup && <InfoPopup onClose={() => setShowPopup(false)} />}
       </div>
     </VisProvider>
