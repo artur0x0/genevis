@@ -1,11 +1,15 @@
 import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
+import { useVis } from '../context/VisContext';
+import { useData } from '../context/DataContext';
 
 const InstancedPoints = ({ data, onSelectPoint }) => {
     const meshRef = useRef();
     const heightScale = 200;
     const { camera, gl } = useThree();
+    const { selectedColorColumn, colorScheme } = useVis();
+    const { getModelData } = useData();
 
     useEffect(() => {
         if (!meshRef.current || !data.length) return;
@@ -16,75 +20,48 @@ const InstancedPoints = ({ data, onSelectPoint }) => {
         data.forEach((point, i) => {
             const height = point.expression * heightScale;
             tempObject.position.set(point.x, height/2, point.y);
-            tempObject.scale.set(4, height || 0, 4)
+            tempObject.scale.set(4, height || 0, 4);
             tempObject.updateMatrix();
             meshRef.current.setMatrixAt(i, tempObject.matrix);
-            colors.set([0.666, 0.666, 0.666], i * 3); // Set to grey #aaa
-            meshRef.current.geometry.setAttribute('color', new THREE.InstancedBufferAttribute(colors, 3));
-            meshRef.current.geometry.computeBoundingBox();
+
+            // Get color using modelData lookup
+            let color;
+            const modelData = getModelData(point);
+            if (modelData && colorScheme[selectedColorColumn]?.[modelData[selectedColorColumn]]) {
+                const value = modelData[selectedColorColumn];
+                const hslColor = colorScheme[selectedColorColumn][value];
+                color = new THREE.Color(hslColor);
+            } else {
+                color = new THREE.Color(0.666, 0.666, 0.666); // Default gray
+            }
+
+            colors.set([color.r, color.g, color.b], i * 3);
         });
 
+        meshRef.current.geometry.setAttribute('color', 
+            new THREE.InstancedBufferAttribute(colors, 3));
         meshRef.current.instanceMatrix.needsUpdate = true;
-        
-    }, [data]);
+        meshRef.current.geometry.attributes.color.needsUpdate = true;
+    }, [data, selectedColorColumn, colorScheme, heightScale, getModelData]);
 
     const handleClick = (event) => {
         event.stopPropagation();
-    
+        
         const raycaster = new THREE.Raycaster();
         const rect = gl.domElement.getBoundingClientRect();
         const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
         const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
-        console.log('Click event:', {
-            normalizedCoords: { x, y },
-            rawCoords: { clientX: event.clientX, clientY: event.clientY },
-            rect: {
-                left: rect.left,
-                top: rect.top,
-                width: rect.width,
-                height: rect.height
-            },
-            camera: {
-                position: camera.position.toArray(),
-                rotation: camera.rotation.toArray(),
-                matrix: camera.matrix.toArray(),
-                projectionMatrix: camera.projectionMatrix.toArray()
-            }
-        });
-
         raycaster.setFromCamera({ x, y }, camera);
         const intersects = raycaster.intersectObject(meshRef.current);
 
-        console.log('Raycaster test:', {
-            ray: {
-                origin: raycaster.ray.origin.toArray(),
-                direction: raycaster.ray.direction.toArray()
-            },
-            intersectionsFound: intersects.length,
-            intersectionDetails: intersects.map(int => ({
-                distance: int.distance,
-                instanceId: int.instanceId,
-                point: int.point.toArray(),
-                face: int.face
-            }))
-        });
-
         if (intersects.length > 0) {
             const instanceId = intersects[0].instanceId;
-            onSelectPoint(data[instanceId]);
+            const point = data[instanceId];
 
-            // Update color to green for the selected instance
-            const colors = meshRef.current.geometry.attributes.color.array;
-
-            for (let i = 0; i < data.length; i++) {
-                if (i === instanceId) {
-                    colors.set([0, 1, 0], i * 3); // Green
-                } else {
-                    colors.set([0.666, 0.666, 0.666], i * 3); // Gray
-                }
-            }
-            meshRef.current.geometry.attributes.color.needsUpdate = true;
+            console.log("Clicked point: ", point);
+            const modelData = getModelData(point);
+            onSelectPoint({ ...point, modelData }); // Add modelData only when needed
         } else {
             onSelectPoint(null);
         }
