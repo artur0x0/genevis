@@ -5,6 +5,7 @@ const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
   const [points, setPoints] = useState([]);
+  const [genes, setGenes] = useState([]);
   const [modelData, setModelData] = useState(null);
   const [modelMap, setModelMap] = useState({});
   const [loading, setLoading] = useState(true);
@@ -75,6 +76,7 @@ export const DataProvider = ({ children }) => {
                   z: 0,
                   cellLine,  // This is the ACH-* ID we'll use for lookup
                   gene: genes[colIndex - 1] || '',
+                  columnIndex: colIndex, // This is the column index used for gene filtering
                   expression: expressionValue,
                   originalExpression: -expressionValue
                 });
@@ -90,6 +92,7 @@ export const DataProvider = ({ children }) => {
             });
 
             setPoints(points);
+            setGenes(genes);
             setLoading(false);
           },
           error: (error) => {
@@ -124,6 +127,7 @@ export const DataProvider = ({ children }) => {
       points, 
       modelData, 
       getModelData,
+      genes,
       loading, 
       error 
     }}>

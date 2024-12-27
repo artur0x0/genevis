@@ -4,33 +4,40 @@ import { OrbitControls } from '@react-three/drei';
 import InstancedPoints from './InstancedPoints';
 import Axes from './Axes';
 import { useVis } from '../context/VisContext';
-import { useData } from '../context/DataContext';
 
 const ThreePointVis = ({ data, viewMode, setViewMode, selectedPoint, onSelectPoint }) => {
-    const controlsRef = useRef();
-    const { activeFilters } = useVis();
-    const { getModelData } = useData();
-  
-    // Filter the data based on active filters
-    const filteredData = useMemo(() => {
-      if (!data) return [];
-      
-      if (Object.keys(activeFilters).length === 0 || 
-          Object.values(activeFilters).every(values => !values?.length)) {
-        return data;
-      }
-  
-      return data.filter(point => {
-        const modelData = getModelData(point);
-        if (!modelData) return false;
-        
+  const controlsRef = useRef();
+  const { activeFilters } = useVis();
+
+  // Filter the data based on active filters
+  const filteredData = useMemo(() => {
+    if (!data) return [];
+    
+    let filtered = data;
+
+    // Apply gene filter if exists
+    if (activeFilters.geneFilter) {
+      const { index } = activeFilters.geneFilter;
+      filtered = data.filter(point => point.columnIndex === index);
+    }
+
+    // Apply model data filters
+    if (Object.keys(activeFilters).length > (activeFilters.geneFilter ? 1 : 0)) {
+      filtered = filtered.filter(point => {
         return Object.entries(activeFilters).every(([column, selectedValues]) => {
+          if (column === 'geneFilter') return true; // Skip gene filter as it's already handled
           if (!selectedValues?.length) return true;
+          
+          const modelData = getModelData(point);
+          if (!modelData) return false;
           return selectedValues.includes(modelData[column]);
         });
       });
-    }, [data, activeFilters, getModelData]);
+    }
 
+    return filtered;
+  }, [data, activeFilters]);
+  
   useEffect(() => {
     if (!controlsRef.current) return;
     switch (viewMode) {
