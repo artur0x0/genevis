@@ -9,7 +9,6 @@ export const About = () => {
           <p className="text-gray-700 mb-4">
             Genevis is a 3D visualization tool for exploring gene expression data from the DepMap dataset. 
             This tool allows researchers to interactively explore relationships in significant gene expressions across all of DepMap's cell lines in one place.
-            Additional tools to sort, filter and heatmap the data are coming soon.
           </p>
         </section>
         
@@ -32,17 +31,36 @@ export const About = () => {
           </p>
         </section>
         
-        <section>
+        <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">How to Use</h2>
           <p className="text-gray-700 mb-4">
             The visualization allows you to:
           </p>
           <ul className="list-disc pl-6 text-gray-700 space-y-2">
             <li>View gene expression data in a 3D space</li>
-            <li>Switch between Gene View and Cell Line View modes</li>
+            <li>Select metadata type to color-code the genes in the heatmap pane</li>
+            <li>Search for genes in the search bar</li>
+            <li>Switch between gene view and cell line view modes</li>
+            <li>Limit displayed data with stackable fitles in the filter pane</li>
             <li>Click on data points to see detailed information</li>
             <li>Access direct links to the DepMap portal for more information</li>
           </ul>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-semibold mb-4">Contribute</h2>
+          <p className="text-gray-700 mb-4">
+            The source code for this tool is published under the MIT License{' '}
+            <a
+              href="https://github.com/artur0x0/genevis"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              on GitHub.{' '}
+            </a>
+            Make a pull request if you would like to contribute to this project.
+          </p>
         </section>
       </div>
     );
