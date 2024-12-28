@@ -8,7 +8,7 @@ const FilterPane = () => {
     activeFilters,
     setActiveFilters
   } = useVis();
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleFilterChange = (column, value, checked) => {
     setActiveFilters(prev => {
@@ -25,21 +25,20 @@ const FilterPane = () => {
   };
 
   return (
-    <div className={`transition-all duration-300 ease-in-out ${
-      isExpanded ? 'h-full' : 'h-[48px]'  // 48px matches header height
+    <div className={`w-full transition-all duration-300 ease-in-out ${
+      isExpanded ? 'md:h-full' : 'h-[48px]'
     } bg-white/90 rounded-lg shadow backdrop-blur-sm overflow-hidden flex flex-col`}>
-      <div 
+      <div
         className="p-3 border-b flex justify-between items-center cursor-pointer hover:bg-gray-50"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <h3 className="font-medium">Filters</h3>
+        <h3 className="font-medium text-medium">Filters</h3>
         <button className="p-1 hover:bg-gray-100 rounded-full">
           {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
         </button>
       </div>
-      
       <div className="flex-1 overflow-hidden">
-        <div className="p-3 space-y-4 overflow-y-auto h-full">
+        <div className="p-3 space-y-4 overflow-y-auto max-h-[60vh] md:h-full">
           {Object.entries(uniqueValues).map(([column, values]) => (
             <div key={column} className="space-y-1">
               <h4 className="font-medium text-sm">{column}</h4>

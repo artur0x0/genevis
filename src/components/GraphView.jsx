@@ -1,24 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { VisProvider } from '../context/VisContext';
+import { Info, X } from 'lucide-react';
 import ThreePointVis from './ThreePointVis';
 import HeatmapControls from './HeatmapControls';
 import ViewControls from './ViewControls';
 import FilterPane from './FilterPane';
 import InfoPanel from './InfoPanel';
-import InfoPopup from './InfoPopup';
 import SearchPane from './SearchPane';
+
+const MobileSettingsDrawer = ({ isOpen, onClose, children }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 z-50 md:hidden">
+      <div 
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <div className="absolute right-0 top-0 h-full w-80 bg-white shadow-lg">
+        <div className="flex items-center justify-between p-4 border-b">
+          <h2 className="font-medium text-xl">View Configuration</h2>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
+            <X size={20} />
+          </button>
+        </div>
+        <div className="p-4 space-y-4 overflow-y-auto max-h-[calc(100vh-4rem)]">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const GraphView = () => {
   const { points, loading, error } = useData();
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [viewMode, setViewMode] = useState('free');
-  const [showPopup, setShowPopup] = useState(false);
-
-  const handleClearSelection = () => {
-    setSelectedPoint(null);
-  };
-
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -37,36 +57,72 @@ const GraphView = () => {
 
   return (
     <VisProvider>
-      <div className="relative bg-gray-900 flex-1">
-        {/* Left side controls */}
-        <div className="absolute w-64 flex flex-col gap-4 z-10">
-          <HeatmapControls />
-        </div>
-  
-        {/* Centered search bar */}
-        <SearchPane />
-        
-        {/* Right side controls */}
-        <div className="absolute right-4 top-4 bottom-4 w-64 flex flex-col gap-2 z-10">
-          <ViewControls viewMode={viewMode} setViewMode={setViewMode} />
-          <div className="flex-1 min-h-0">
-            <FilterPane />
+      <div className="relative bg-gray-900 h-screen">
+        {/* Mobile Layout */}
+        <div className="md:hidden fixed top-4 left-4 right-4 z-20">
+          <div className="flex items-center gap-3">
+            <div className="flex-1">
+              <SearchPane />
+            </div>
+            <ViewControls 
+              viewMode={viewMode} 
+              setViewMode={setViewMode} 
+            />
+            <button
+              onClick={() => setIsSettingsOpen(true)}
+              className="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-lg shadow flex items-center justify-center"
+            >
+              <Info size={20} />
+            </button>
           </div>
         </div>
-  
-        <ThreePointVis
-          data={points}
-          viewMode={viewMode}
-          setViewMode={setViewMode}
+
+        {/* Desktop Layout */}
+        <div className="hidden md:block">
+          {/* Left Controls */}
+          <div className="absolute left-4 w-64 flex flex-col gap-4 z-10">
+            <HeatmapControls />
+          </div>
+          
+          {/* Centered Search */}
+          <div className="absolute left-1/2 -translate-x-1/2 w-[600px] z-10">
+            <SearchPane />
+          </div>
+          
+          {/* Right Controls */}
+          <div className="absolute right-4 top-4 bottom-4 w-64 flex flex-col gap-2 z-10">
+            <ViewControls viewMode={viewMode} setViewMode={setViewMode} />
+            <div className="flex-1 min-h-0">
+              <FilterPane />
+            </div>
+          </div>
+        </div>
+
+        {/* Visualization */}
+        <div className="absolute inset-0">
+          <ThreePointVis
+            data={points}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+            selectedPoint={selectedPoint}
+            onSelectPoint={setSelectedPoint}
+          />
+        </div>
+
+        {/* Mobile Settings Drawer */}
+        <MobileSettingsDrawer 
+          isOpen={isSettingsOpen} 
+          onClose={() => setIsSettingsOpen(false)}
+        >
+          <HeatmapControls />
+          <FilterPane />
+        </MobileSettingsDrawer>
+
+        {/* Info Panel */}
+        <InfoPanel
           selectedPoint={selectedPoint}
-          onSelectPoint={setSelectedPoint}
+          onClose={() => setSelectedPoint(null)}
         />
-        
-        <InfoPanel 
-          selectedPoint={selectedPoint}
-          onClose={handleClearSelection}
-        />
-        {showPopup && <InfoPopup onClose={() => setShowPopup(false)} />}
       </div>
     </VisProvider>
   );

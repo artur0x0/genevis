@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { X, Search } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { useVis } from '../context/VisContext';
@@ -7,26 +7,22 @@ const SearchPane = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const { genes, geneIndices } = useData();
+  const { genes } = useData();
   const { activeFilters, setActiveFilters } = useVis();
-  const searchRef = useRef(null);
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
-
     if (value.length < 2) {
       setSuggestions([]);
       setShowSuggestions(false);
       return;
     }
-
-    // Create suggestions with their indices
+    
     const matchingGenes = genes
       .map((gene, index) => ({ gene, index }))
       .filter(({ gene }) => gene.toLowerCase().includes(value.toLowerCase()))
       .slice(0, 10);
-
     setSuggestions(matchingGenes);
     setShowSuggestions(true);
   };
@@ -34,9 +30,8 @@ const SearchPane = () => {
   const handleSelectGene = ({ gene, index }) => {
     setActiveFilters(prev => ({
       ...prev,
-      geneFilter: { name: gene, index: index + 1 } // +1 because first column is cell line
+      geneFilter: { name: gene, index: index + 1 }
     }));
-    
     setSearchTerm('');
     setSuggestions([]);
     setShowSuggestions(false);
@@ -50,40 +45,41 @@ const SearchPane = () => {
   };
 
   return (
-    <div className="absolute top-4 left-1/2 -translate-x-1/2 w-[600px] z-10">
-      <div className="relative" ref={searchRef}>
+    <div className="relative w-full md:w-[600px] md:absolute md:left-1/2 md:-translate-x-1/2 md:top-4">
+      {/* Search input container with fixed height */}
+      <div className="h-12">
         <input
           type="text"
           value={searchTerm}
           onChange={handleSearchChange}
-          placeholder="Search gene"
-          className="w-full p-3 rounded-lg bg-white/90 backdrop-blur-sm shadow pl-4 pr-10"
+          placeholder="Search"
+          className="w-full h-full rounded-lg bg-white/90 backdrop-blur-sm shadow pl-4 pr-10"
         />
-        <Search 
-          size={20} 
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+        <Search
+          size={20}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
         />
-
-        {/* Suggestions dropdown */}
-        {showSuggestions && suggestions.length > 0 && (
-          <div className="absolute z-10 w-full mt-1 bg-white/90 backdrop-blur-sm border rounded-lg shadow-lg max-h-60 overflow-auto">
-            {suggestions.map(({ gene, index }) => (
-              <button
-                key={index}
-                onClick={() => handleSelectGene({ gene, index })}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
-              >
-                {gene}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
-      {/* Selected gene chip */}
+      {/* Suggestions dropdown */}
+      {showSuggestions && suggestions.length > 0 && (
+        <div className="absolute z-50 w-full mt-1 bg-white/90 backdrop-blur-sm border rounded-lg shadow-lg max-h-60 overflow-auto">
+          {suggestions.map(({ gene, index }) => (
+            <button
+              key={index}
+              onClick={() => handleSelectGene({ gene, index })}
+              className="w-full text-left px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+            >
+              {gene}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Selected gene chip - Absolute positioned below search */}
       {activeFilters.geneFilter && (
-        <div className="mt-2 flex flex-wrap gap-2">
-          <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-lg text-sm shadow">
+        <div className="absolute top-[calc(100%+0.5rem)] left-0">
+          <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-sm shadow">
             {activeFilters.geneFilter.name}
             <button
               onClick={handleRemoveGene}
