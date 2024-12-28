@@ -21,7 +21,7 @@ const MobileSettingsDrawer = ({ isOpen, onClose, children }) => {
       />
       <div className="absolute right-0 top-0 h-full w-80 bg-white shadow-lg">
         <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="font-medium">Info</h2>
+          <h2 className="font-medium">Configuration</h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
             <X size={20} />
           </button>
@@ -91,7 +91,7 @@ const GraphView = () => {
           </div>
           
           {/* Right Controls */}
-          <div className="absolute right-4 top-4 bottom-4 w-64 flex flex-col gap-2 z-10">
+          <div className="absolute right-4 top-8 bottom-4 w-64 flex flex-col gap-2 z-10">
             <ViewControls viewMode={viewMode} setViewMode={setViewMode} />
             <div className="flex-1 min-h-0">
               <FilterPane />
