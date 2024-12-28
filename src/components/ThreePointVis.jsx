@@ -150,13 +150,6 @@ const ThreePointVis = ({ data, viewMode, setViewMode, selectedPoint, onSelectPoi
         onChange={() => {
           if (viewMode !== 'free') setViewMode('free');
         }}
-        enableDamping
-        dampingFactor={0.05}
-        rotateSpeed={0.8}
-        touches={{
-          one: 1.5,
-          two: 0.5
-        }}
       />
     </Canvas>
   );
