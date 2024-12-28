@@ -12,7 +12,7 @@ const ColorLegend = () => {
     <div className="mt-2 bg-white/90 rounded-lg shadow">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-4 py-2 flex items-center justify-between font-medium text-medium hover:bg-gray-50 rounded-lg"
+        className="w-full px-4 py-2 flex items-center justify-between font-light text-medium hover:bg-gray-50 rounded-lg"
       >
         Color Legend
         {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}

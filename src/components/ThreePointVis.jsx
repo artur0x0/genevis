@@ -132,8 +132,7 @@ const ThreePointVis = ({ data, viewMode, setViewMode, selectedPoint, onSelectPoi
         fov: window.innerWidth < 768 ? 85 : 75
       }}
       gl={{
-        antialias: false,
-        powerPreference: "high-performance"
+        antialias: false
       }}
     >
       <color attach="background" args={['#1f2937']} />

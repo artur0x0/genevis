@@ -11,8 +11,8 @@ const HeatmapControls = () => {
 
   return (
     <div className="w-full md:absolute md:top-4 md:left-4 md:w-64 z-10">
-      <div className="bg-white/90 p-4 rounded-lg shadow backdrop-blur-sm">
-        <h3 className="font-medium text-medium mb-2">Color Map</h3>
+      <div className="bg-white/90 p-4 pt-2 rounded-lg shadow backdrop-blur-sm">
+        <h3 className="font-light text-medium mb-2">Color Map</h3>
         <select
           value={selectedColorColumn}
           onChange={(e) => setSelectedColorColumn(e.target.value)}

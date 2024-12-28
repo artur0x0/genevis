@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { VisProvider } from '../context/VisContext';
-import { Info, X } from 'lucide-react';
+import { Settings, X } from 'lucide-react';
 import ThreePointVis from './ThreePointVis';
 import HeatmapControls from './HeatmapControls';
 import ViewControls from './ViewControls';
 import FilterPane from './FilterPane';
 import InfoPanel from './InfoPanel';
 import SearchPane from './SearchPane';
+import GestureTutorial from './GestureTutorial';
 
 const MobileSettingsDrawer = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
@@ -20,7 +21,7 @@ const MobileSettingsDrawer = ({ isOpen, onClose, children }) => {
       />
       <div className="absolute right-0 top-0 h-full w-80 bg-white shadow-lg">
         <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="font-medium text-xl">View Configuration</h2>
+          <h2 className="font-medium">Info</h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
             <X size={20} />
           </button>
@@ -59,7 +60,7 @@ const GraphView = () => {
     <VisProvider>
       <div className="relative bg-gray-900 h-screen">
         {/* Mobile Layout */}
-        <div className="md:hidden fixed top-4 left-4 right-4 z-20">
+        <div className="md:hidden fixed top-20 left-4 right-4 z-20">
           <div className="flex items-center gap-3">
             <div className="flex-1">
               <SearchPane />
@@ -72,7 +73,7 @@ const GraphView = () => {
               onClick={() => setIsSettingsOpen(true)}
               className="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-lg shadow flex items-center justify-center"
             >
-              <Info size={20} />
+              <Settings size={20} />
             </button>
           </div>
         </div>
@@ -80,12 +81,12 @@ const GraphView = () => {
         {/* Desktop Layout */}
         <div className="hidden md:block">
           {/* Left Controls */}
-          <div className="absolute left-4 w-64 flex flex-col gap-4 z-10">
+          <div className="absolute top-4 left-4 w-64 flex flex-col gap-4 z-10">
             <HeatmapControls />
           </div>
           
           {/* Centered Search */}
-          <div className="absolute left-1/2 -translate-x-1/2 w-[600px] z-10">
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 w-[600px] z-10">
             <SearchPane />
           </div>
           
@@ -123,6 +124,9 @@ const GraphView = () => {
           selectedPoint={selectedPoint}
           onClose={() => setSelectedPoint(null)}
         />
+
+        {/* Help Button & Tutorial */}
+        <GestureTutorial />
       </div>
     </VisProvider>
   );

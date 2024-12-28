@@ -32,7 +32,7 @@ const FilterPane = () => {
         className="p-3 border-b flex justify-between items-center cursor-pointer hover:bg-gray-50"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <h3 className="font-medium text-medium">Filters</h3>
+        <h3 className="font-light text-medium">Filters</h3>
         <button className="p-1 hover:bg-gray-100 rounded-full">
           {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
         </button>

@@ -13,7 +13,7 @@ const ViewControls = ({ viewMode, setViewMode }) => {
                 : 'hover:bg-gray-100'
             }`}
           >
-            <span className="text-medium font-medium hidden md:inline">Gene View</span>
+            <span className="text-medium font-light hidden md:inline">Gene View</span>
             <span className="md:hidden">Gene</span>
           </button>
           <button
@@ -24,7 +24,7 @@ const ViewControls = ({ viewMode, setViewMode }) => {
                 : 'hover:bg-gray-100'
             }`}
           >
-            <span className="text-medium font-medium hidden md:inline">Cell Line View</span>
+            <span className="text-medium font-light hidden md:inline">Cell Line View</span>
             <span className="md:hidden">Cell Line</span>
           </button>
         </div>

@@ -2,7 +2,6 @@
 export const About = () => {
     return (
       <div className="max-w-4xl mx-auto p-8">
-        <h1 className="text-3xl font-bold mb-6">About Genevis</h1>
         
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">Project Overview</h2>
@@ -38,10 +37,10 @@ export const About = () => {
           </p>
           <ul className="list-disc pl-6 text-gray-700 space-y-2">
             <li>View gene expression data in a 3D space</li>
-            <li>Select metadata type to color-code the genes in the heatmap pane</li>
-            <li>Search for genes in the search bar</li>
-            <li>Switch between gene view and cell line view modes</li>
-            <li>Limit displayed data with stackable fitles in the filter pane</li>
+            <li>Select metadata type to color-code the genes in the colormap pane</li>
+            <li>Look up a specific gene across all cell lineS in the search bar</li>
+            <li>Quickly rotate view normal to gene and cell line axes</li>
+            <li>Limit displayed data with stackable filters in the filter pane</li>
             <li>Click on data points to see detailed information</li>
             <li>Access direct links to the DepMap portal for more information</li>
           </ul>
